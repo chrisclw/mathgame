@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cherish's Division Adventure</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(#a8e6ff, #ffffff);
+            padding: 20px;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1 { font-size: 40px; margin-top: 10px; }
+        #dog { font-size: 70px; margin: 10px; }
+        #question { font-size: 48px; margin: 20px; font-weight: bold; }
+        
+        .input-container { margin: 20px; }
+        input {
+            font-size: 30px;
+            width: 100px;
+            text-align: center;
+            margin: 5px;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 12px 25px;
+            margin: 10px;
+            border-radius: 10px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover { background: #3e8e41; transform: scale(1.05); }
+        button.hint-btn { background: #ff9800; }
+        button.hint-btn:hover { background: #e68a00; }
+
+        #hint { font-size: 20px; color: #444; margin: 15px; min-height: 60px; line-height: 1.5; }
+        #message { font-size: 28px; margin: 15px; font-weight: bold; }
+        #score { font-size: 24px; margin-top: 20px; }
+        #treasure { font-size: 35px; margin-top: 10px; letter-spacing: 5px; }
+        .level { font-size: 22px; font-weight: bold; color: #007bff; }
+    </style>
+</head>
+
+<body>
+
+    <h1>🐶 Cherish's Division Adventure</h1>
+    <div id="dog">🐕</div>
+    <div class="level">Level: <span id="level-text">Easy</span></div>
+    
+    <div id="question"></div>
+
+    <div class="input-container">
+        <div>
+            Quotient: <input type="number" id="answerQ" placeholder="Q">
+            Remainder: <input type="number" id="answerR" placeholder="R">
+        </div>
+        <button onclick="checkAnswer()">Submit</button>
+        <button class="hint-btn" onclick="showHint()">Hint</button>
+    </div>
+
+    <div id="hint"></div>
+    <div id="message"></div>
+    <div id="score">Treasure: 0</div>
+    <div id="treasure"></div>
+
+    <script>
+        let dividend, divisor, quotient, remainder;
+        let score = 0;
+        let level = 1;
+
+        function newQuestion() {
+            // Level 1: Simple division, no remainders
+            if (level == 1) {
+                divisor = Math.floor(Math.random() * 8) + 2;
+                quotient = Math.floor(Math.random() * 10) + 2;
+                remainder = 0;
+            } 
+            // Level 2: Division with small remainders
+            else if (level == 2) {
+                divisor = Math.floor(Math.random() * 8) + 2;
+                quotient = Math.floor(Math.random() * 10) + 2;
+                remainder = Math.floor(Math.random() * divisor);
+            } 
+            // Level 3: Larger numbers
+            else {
+                divisor = Math.floor(Math.random() * 9) + 2;
+                quotient = Math.floor(Math.random() * 30) + 5;
+                remainder = Math.floor(Math.random() * divisor);
+            }
+
+            dividend = (divisor * quotient) + remainder;
+
+            document.getElementById("question").innerHTML = dividend + " ÷ " + divisor;
+            document.getElementById("answerQ").value = "";
+            document.getElementById("answerR").value = "";
+            document.getElementById("hint").innerHTML = "";
+            document.getElementById("answerQ").focus();
+        }
+
+        function showHint() {
+            let step1 = "Step 1: What number × " + divisor + " is close to " + dividend + "?";
+            let step2 = "Step 2: " + divisor + " × " + quotient + " = " + (divisor * quotient);
+            let step3 = "Step 3: Subtract: " + dividend + " − " + (divisor * quotient) + " = " + remainder;
+
+            document.getElementById("hint").innerHTML = step1 + "<br>" + step2 + "<br>" + step3;
+        }
+
+        function checkAnswer() {
+            let userQ = Number(document.getElementById("answerQ").value);
+            let userR = Number(document.getElementById("answerR").value);
+
+            if (userQ === quotient && userR === remainder) {
+                score++;
+                document.getElementById("message").innerHTML = "🎉 Correct!";
+                document.getElementById("message").style.color = "green";
+                document.getElementById("treasure").innerHTML += "💎";
+            } else {
+                document.getElementById("message").innerHTML = "❌ Answer: " + quotient + " R " + remainder;
+                document.getElementById("message").style.color = "red";
+            }
+
+            document.getElementById("score").innerHTML = "Treasure: " + score;
+
+            // Progression Logic
+            if (score === 5 && level === 1) {
+                level = 2;
+                document.getElementById("level-text").innerHTML = "Medium";
+                document.getElementById("message").innerHTML += "<br>⭐ Level Up!";
+            } else if (score === 10 && level === 2) {
+                level = 3;
+                document.getElementById("level-text").innerHTML = "Hard";
+                document.getElementById("message").innerHTML += "<br>🚀 Level Up!";
+            }
+
+            if (score >= 15) {
+                document.getElementById("message").innerHTML = "🏆 Amazing! You helped the puppy find all the treasure!";
+                document.getElementById("question").innerHTML = "Victory! 🐾";
+                return;
+            }
+
+            // Short delay before next question so they can see the message
+            setTimeout(newQuestion, 1500);
+        }
+
+        // Start the game
+        newQuestion();
+    </script>
+</body>
+</html>
